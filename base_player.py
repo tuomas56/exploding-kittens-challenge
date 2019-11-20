@@ -8,7 +8,7 @@ class BasePlayer:
         pass
     def skip(self):
         pass
-    def take_turn_twice(self):
+    def take_turn_twice(self, game):
         pass
     def nope_prompt(self):
         pass

@@ -24,9 +24,9 @@ class Player(BasePlayer):
     def skip(self):
         pass
 
-    def take_turn_twice(self):
-        self.turn()
-        self.turn()
+    def take_turn_twice(self, game):
+        self.turn(game)
+        self.turn(game)
 
     def nope_prompt(self) -> bool:
         for card in self.hand:

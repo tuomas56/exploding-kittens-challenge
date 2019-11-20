@@ -21,7 +21,7 @@ class KittenCard(BaseCard):
         super().__init__(name)
         self.selfcast = selfcast
         self.targetable = targetable
-    def effect(self, player: BasePlayer, target: BasePlayer):
+    def effect(self, player: BasePlayer, target: BasePlayer, game: Game):
         pass
 
 class ExplodeCard(KittenCard):
@@ -32,7 +32,7 @@ class DefuseCard(KittenCard):
     def __init__(self, deck: pyCardDeck.deck, name: str = "Defuse"):
         super().__init__(name, selfcast=True)
         self.deck = deck
-    def effect(self, player: BasePlayer, target: BasePlayer):
+    def effect(self, player: BasePlayer, target: BasePlayer, game: Game):
         position = player.insert_explode()
         self.deck.add_single(ExplodeCard(), position=position)
 
@@ -52,22 +52,22 @@ class ShuffleCard(KittenCard):
     def __init__(self, deck: pyCardDeck.Deck, name: str = "Shuffle"):
         super().__init__(name)
         self.deck = deck
-    def effect(self, player: BasePlayer, target: BasePlayer):
+    def effect(self, player: BasePlayer, target: BasePlayer, game: Game):
         self.deck.shuffle()
 
 class AttackCard(KittenCard):
     def __init__(self, name: str = "Attack"):
         super().__init__(name, selfcast=True, targetable=True)
-    def effect(self, player: BasePlayer, target: BasePlayer):
+    def effect(self, player: BasePlayer, target: BasePlayer, game: Game):
         player.skip()
-        target.take_turn_twice()
+        target.take_turn_twice(game)
 
 class SeeTheFuture(KittenCard):
     def __init__(self, deck: pyCardDeck.Deck, name: str = "See The Future"):
         super().__init__(name)
         self.deck = deck
-    def effect(self, player: BasePlayer, target: BasePlayer):
-        self.deck.show_top(3)
+    def effect(self, player: BasePlayer, target: BasePlayer, game: Game):
+        return self.deck.show_top(3)
 
 class NopeCard(KittenCard):
     def __init__(self, name: str = "Nope"):
@@ -76,13 +76,13 @@ class NopeCard(KittenCard):
 class SkipCard(KittenCard):
     def __init__(self, name: str = "Skip"):
         super().__init__(name, selfcast=True)
-    def effect(self, player: BasePlayer, target: BasePlayer):
+    def effect(self, player: BasePlayer, target: BasePlayer, game: Game):
         player.skip()
 
 class FavorCard(KittenCard):
     def __init__(self, name: str = "Favor"):
         super().__init__(name, targetable=True, selfcast=True)
-    def effect(self, player: BasePlayer, target: BasePlayer):
+    def effect(self, player: BasePlayer, target: BasePlayer, game: Game):
         random_target_card = target.hand.pop(randrange(target.hand))
         player.hand.append(random_target_card)
 
@@ -150,9 +150,9 @@ class Game:
         elif card.targetable and target is None:
             raise Exception("You must pass a target!")
         elif not self.ask_for_nope():
-            card.effect(player, target)
+            card.effect(player, target, self)
         else:
-            print("Card was noped :(")
+            pass
 
 
 def construct_deck(game: Game):
